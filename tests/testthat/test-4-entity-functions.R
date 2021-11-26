@@ -16,10 +16,10 @@ test_that("spacy_extract_entity data.frame works", {
     expect_equal(
         entities$text,
         c("Gatsby", "Louisiana", "East Side", "New York", "New Haven",
-          "1915", "just a quarter of a century", "Teutonic", "the Great War"))
+          "1915", "Teutonic", "the Great War"))
     expect_equal(
         entities$ent_type,
-        c("PERSON", "GPE", "LOC", "GPE", "GPE", "DATE", "CARDINAL", "NORP", "EVENT"))
+        c("PERSON", "GPE", "LOC", "GPE", "GPE", "DATE", "NORP", "EVENT"))
     expect_silent(spacy_finalize())
 })
 
@@ -56,8 +56,7 @@ test_that("spacy_extract_entity list works", {
     expect_equal(
         entities,
         list(doc1 = c("Gatsby", "Louisiana", "East Side", "New York"),
-             doc2 = c("New Haven", "1915", "just a quarter of a century",
-                      "Teutonic", "the Great War"))
+             doc2 = c("New Haven", "1915", "Teutonic", "the Great War"))
     )
 
 })
@@ -123,12 +122,12 @@ test_that("spacy_extract_entity type option works", {
 
     expect_equal(
         nrow(spacy_extract_entity(txt1, output = "data.frame", type = "extended")),
-        2
+        1
     )
 
     expect_equal(
         nrow(spacy_extract_entity(txt1, output = "data.frame", type = "all")),
-        9
+        8
     )
 
     expect_equal(
@@ -139,9 +138,8 @@ test_that("spacy_extract_entity type option works", {
 
     expect_equal(
         unname(unlist(spacy_extract_entity(txt1, output = "list", type = "extended"))),
-        c("1915", "just a quarter of a century")
+        "1915"
     )
-
     expect_equal(
         spacy_extract_entity(txt1, output = "data.frame", type = "named")$text,
         unname(unlist(spacy_extract_entity(txt1, output = "list", type = "named")))

@@ -7,7 +7,7 @@ test_that("lanugage model download works", {
     skip_on_os("solaris")
     skip_if_no_python_or_no_spacy()
 
-    expect_message(spacy_download_langmodel("de"), "successfully")
+    expect_message(spacy_download_langmodel("de_core_news_sm"), "successfully")
 })
 
 
@@ -35,7 +35,7 @@ test_that("spacy_install specific version of spacy works", {
     # expect_message(spacy_install(envname = "test_specific_version", version = "2.0.1",
     #                              prompt = FALSE),
     #                "Installation complete")
-    expect_message(spacy_install(envname = "test_specific_version_v1", version = "1.9.0",
+    expect_message(spacy_install(envname = "test_specific_version_v1", version = "2.2.0",
                                  prompt = FALSE),
                    "Installation complete")
 })

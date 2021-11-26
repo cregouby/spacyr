@@ -97,8 +97,7 @@ test_that("spacy_tokenize remove_symbols argument work as expected", {
     )
     expect_equivalent(
         spacy_tokenize(txt, remove_symbols = TRUE, padding = FALSE),
-        list(c("This", ":",  "GBP", "!", "15", "%", "not", "!",
-               ">", "20", "percent", "?"))
+        list(c("This", ":",  "=", "GBP", "!", "15", "%", "not", "!", ">", "20", "percent", "?"))
     )
 })
 
@@ -213,7 +212,7 @@ test_that("spacy_tokenize multithread = TRUE is faster than when FALSE", {
     skip_on_os("solaris")
     skip_if_no_python_or_no_spacy()
 
-    skip("multithread = TRUE performance test skipped because takes so long")
+    # skip("multithread = TRUE performance test skipped because takes so long")
     txt <- rep(data_char_paragraph, 5000)
     expect_lt(
         system.time(spacy_tokenize(txt, multithread = TRUE))["elapsed"],
@@ -242,11 +241,14 @@ test_that("spacy_tokenize what = 'sentence' works as expected", {
                        remove_separators = FALSE),
         list(c(
             "Sentence one!  ",
-            "This: is a test.\n\n",
-            "Yeah, right.  ",
-            "What, Mr. Jones?"
+            " This: is a test.",
+            "\n\nYeah, right.",
+            " What, Mr. Jones?"
         ))
     )
+})
+
+test_that("spacy_tokenize what = 'sentence' is equivalent to quanteda::tokens()", {
     expect_equivalent(
         spacy_tokenize(txt, what = "sentence", remove_separators = TRUE),
         quanteda::tokens(txt, what = "sentence", remove_separators = TRUE) %>% as.list()

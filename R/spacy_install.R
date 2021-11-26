@@ -29,7 +29,7 @@ conda_args <- reticulate:::conda_args
 #'   
 #' @param conda character; path to conda executable. Default "auto" which
 #'   automatically find the path
-#' @param pip \code{TRUE} to use pip for installing spacy. If \code{FALSE}, conda 
+#' @param pip Default \code{TRUE} to use pip for installing spacy. If \code{FALSE}, conda 
 #' package manager with conda-forge channel will be used for installing spacy.
 #' @param lang_models character; language models to be installed. Default
 #'   \code{en_core_web_sm} (English model). A vector of multiple model names can be used
@@ -62,7 +62,7 @@ spacy_install <- function(conda = "auto",
                           lang_models = "en_core_web_sm",
                           python_version = "3.6",
                           envname = "spacy_condaenv",
-                          pip = FALSE,
+                          pip = TRUE,
                           python_path = NULL,
                           prompt = TRUE) {
     # verify os
@@ -124,7 +124,7 @@ spacy_install <- function(conda = "auto",
         # determine whether we have system python
         python_versions <- reticulate::py_versions_windows()
         python_versions <- python_versions[python_versions$type == "PythonCore", ]
-        python_versions <- python_versions[python_versions$version %in% c("3.5", "3.6"), ]
+        python_versions <- python_versions[python_versions$version %in% c("3.6", "3.7", "3.8", "3.9"), ]
         python_versions <- python_versions[python_versions$arch == "x64", ]
         have_system <- nrow(python_versions) > 0
         if (have_system)
@@ -323,8 +323,9 @@ process_spacy_installation_conda <- function(conda, version, lang_models, python
     }
     cat("Installing spaCy...\n")
     packages <- spacy_pkgs(version)
+    reticulate::conda_remove(envname, packages="certifi", conda = conda)
     reticulate::conda_install(envname, packages, pip = pip, conda = conda)
-
+    
     for (model in lang_models) spacy_download_langmodel(model = model, conda = conda,
                                                         envname = envname)
 
@@ -453,7 +454,7 @@ python_version <- function(python) {
 spacy_pkgs <- function(version, packages = NULL) {
     if (is.null(packages))
         packages <- sprintf("spacy%s",
-                            ifelse(version == "latest", "", paste0("=", version)))
+                            ifelse(version == "latest", "", paste0("==", version)))
     return(packages)
 }
 

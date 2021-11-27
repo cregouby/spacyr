@@ -35,7 +35,7 @@ test_that("spacy_install specific version of spacy works", {
     # expect_message(spacy_install(envname = "test_specific_version", version = "2.0.1",
     #                              prompt = FALSE),
     #                "Installation complete")
-    expect_message(spacy_install(envname = "test_specific_version_v1", version = "2.2.0",
+    expect_message(spacy_install(envname = "test_specific_version_v1", version = "3.1.0",
                                  prompt = FALSE),
                    "Installation complete")
 })

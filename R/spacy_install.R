@@ -42,7 +42,7 @@ conda_args <- reticulate:::conda_args
 #'
 #'   You can also provide a full major.minor.patch specification (e.g. "1.1.0")
 #' @param python_version character; determine Python version for condaenv
-#'   installation. versions 3.6 to 3.10 are available. Default to 3.9.
+#'   installation. versions 3.6 to 3.9 are available. Default to 3.9.
 #' @param python_path character; path to Python in virtualenv installation
 #' @param envname character; name of the conda-environment to install spaCy. 
 #'   Default is "spacy_condaenv".
@@ -124,7 +124,7 @@ spacy_install <- function(conda = "auto",
         # determine whether we have system python
         python_versions <- reticulate::py_versions_windows()
         python_versions <- python_versions[python_versions$type == "PythonCore", ]
-        python_versions <- python_versions[python_versions$version %in% c("3.6", "3.7", "3.8", "3.9", "3.10"), ]
+        python_versions <- python_versions[python_versions$version %in% c("3.6", "3.7", "3.8", "3.9"), ]
         python_versions <- python_versions[python_versions$arch == "x64", ]
         have_system <- nrow(python_versions) > 0
         if (have_system)
@@ -513,7 +513,8 @@ spacy_upgrade  <- function(conda = "auto",
 
     conda <- reticulate::conda_binary(conda)
     if (!(envname %in% reticulate::conda_list(conda = conda)$name)) {
-        message("Conda evnronment", envname, "does not exist")
+        message("Conda environment ", envname," does not exist")
+        return(invisible(NULL))
     }
     
     if (update_conda == TRUE) {
@@ -524,33 +525,33 @@ spacy_upgrade  <- function(conda = "auto",
     }
     
     message("checking spaCy version")
-    condaenv_bin <- function(bin) path.expand(file.path(dirname(conda), bin))
-    # cmd <- sprintf("%s%s %s && pip search spacy%s",
-    #                ifelse(is_windows(), "", ifelse(is_osx(), "source ", "/bin/bash -c \"source ")),
-    #                shQuote(path.expand(condaenv_bin("activate"))),
-    #                envname,
-    #                ifelse(is_windows(), "", ifelse(is_osx(), "", "\"")))
-    # result <- system(cmd, intern = TRUE, ignore.stderr = TRUE)
-    # spacy_index <- grep("^spacy \\(", result)
-    # latest_spacy <- sub("spacy \\((.+?)\\).+", "\\1", result[spacy_index])
-    # installed_spacy <- sub(".+?(\\d.+\\d).*", "\\1", result[spacy_index + 1])
-    rss_release <- xml2::read_xml(x="https://pypi.org/rss/project/spacy/releases.xml")
-    result <- xml2::xml_text(xml2::xml_find_all(rss_release, "//link"))
-    spacy_index <- grep("(.\\d+)+", result)
-    latest_spacy <- sub("(.*/)((\\d+\\.?)+)(.*)", "\\2", result[spacy_index])
-    installed_spacy <- sub("(.*/)((\\d+\\.?)+)(.*)", "\\2", result[spacy_index + 1])
+    spacy_initialize(condaenv = envname)
+    installed_spacy <- options("spacy_version")[[1]]
+    spacy_finalize()
+
+    if (is.null(installed_spacy)) {
+      message("spaCy version cannot be found in ", envname," environement.")
+      return(invisible(NULL))
+    }
+    
+    if (pip == TRUE) {
+      rss_release <- xml2::read_xml(x="https://pypi.org/rss/project/spacy/releases.xml")
+      result <- xml2::xml_text(xml2::xml_find_all(rss_release, "//link"))
+      spacy_index <- grep("(.\\d+)+", result)
+      latest_spacy <- sub("(.*/)((\\d+\\.?)+)(.*)", "\\2", result[spacy_index])[[1]]
+    } 
     if (!pip) {
-        latest_spacy <- conda_get_version(major_version = NA, conda, envname)
+      # conda
+      latest_spacy <- conda_get_version(major_version = NA, conda, envname)
     }
     if (latest_spacy == installed_spacy) {
         message("Your spaCy version is the latest available.")
-        return(invisible(NULL))
     } else if (substr(installed_spacy, 0, 2) == "1.") {
-        cat(sprintf("The version spacy installed is %s\n",
+        cat(sprintf("The installed spacy version is %s\n",
                     installed_spacy))
         ans <- if (prompt) utils::menu(c("v1.*", "v2.*"), title = sprintf("Do you want to upgrade to v1.* or lastest v2.*?")) else 2
         if (ans == 2) {
-            cat("spaCy will be upgraded to version", latest_spacy, "\n")
+            cat("spaCy will be upgraded to version ", latest_spacy, "\n")
             process_spacy_installation_conda(conda = conda,
                                              envname = envname,
                                              version = latest_spacy,

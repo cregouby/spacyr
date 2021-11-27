@@ -35,7 +35,7 @@ test_that("spacy_install specific version of spacy works", {
     # expect_message(spacy_install(envname = "test_specific_version", version = "2.0.1",
     #                              prompt = FALSE),
     #                "Installation complete")
-    expect_message(spacy_install(envname = "test_specific_version_v1", version = "3.1.0",
+    expect_message(spacy_install(envname = "test_specific_version_v3", version = "3.1.0",
                                  prompt = FALSE),
                    "Installation complete")
 })
@@ -48,12 +48,10 @@ test_that("spacy_upgrade works", {
     skip_if_no_python_or_no_spacy()
 
     expect_message(spacy_upgrade(envname = "test_latest", prompt = FALSE),
-                   "Your spaCy version is the latest available")
-    # expect_message(spacy_upgrade(envname = "test_specific_version",
-    #                              prompt = FALSE),
-    #                "Successfully upgraded")
-    expect_message(spacy_upgrade(envname = "test_specific_version_v1",
-                                 prompt = FALSE),
+                   "Your spaCy version is the latest available.")
+    expect_message(spacy_upgrade(envname = "test_non_existing_version", prompt = FALSE),
+                   "Conda environment test_non_existing_version does not exist.")
+    expect_message(spacy_upgrade(envname = "test_specific_version_v3", prompt = FALSE, pip = TRUE),
                    "Successfully upgraded")
 
 })
@@ -68,7 +66,7 @@ test_that("spacy_uninstall works", {
     # expect_output(spacy_uninstall(envname = "test_specific_version",
     #                                prompt = FALSE),
     #                "Uninstallation complete")
-    expect_output(spacy_uninstall(envname = "test_specific_version_v1",
+    expect_output(spacy_uninstall(envname = "test_specific_version_v3",
                                   prompt = FALSE),
                   "Uninstallation complete")
     expect_output(spacy_uninstall(envname = "test_latest",

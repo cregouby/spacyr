@@ -1,4 +1,8 @@
 
+# spacyr development release
+
+* Fix some obsolescence in python (default version is now 3.9, `spacy_upgrade()` now relies on pypi rss) 
+
 # spacyr v1.2
 
 * Added an option for using conda package manager instead of `pip` in `spacy_install()` and `spacy_upgrade()`.

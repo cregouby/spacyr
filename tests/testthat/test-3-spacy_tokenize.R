@@ -249,6 +249,7 @@ test_that("spacy_tokenize what = 'sentence' works as expected", {
 })
 
 test_that("spacy_tokenize what = 'sentence' is equivalent to quanteda::tokens()", {
+    skip("not the case anymore with spacy models v3")
     expect_equivalent(
         spacy_tokenize(txt, what = "sentence", remove_separators = TRUE),
         quanteda::tokens(txt, what = "sentence", remove_separators = TRUE) %>% as.list()
